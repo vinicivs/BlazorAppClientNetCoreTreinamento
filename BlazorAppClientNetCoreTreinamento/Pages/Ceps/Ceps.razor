@@ -1,0 +1,74 @@
+﻿@using BlazorAppClientNetCoreTreinamento.Models
+@page "/ceps"
+@inject HttpClient http
+
+<h3>Lista de CEPs</h3>
+<a href="/ceps/create">Novo CEP</a>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (ceps == null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CEP</th>
+                <th>Logradouro</th>
+                <th>Número</th>
+                <th>Complemento</th>
+                <th>Bairro</th>
+                <th>Cidade</th>
+                <th>Uf</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cep in ceps)
+            {
+                <tr>
+                    <td>@cep.Cep</td>
+                    <td>@cep.Logradouro</td>
+                    <td>@cep.Numero</td>
+                    <td>@cep.Complemento</td>
+                    <td>@cep.Bairro</td>
+                    <td>@cep.Cidade</td>
+                    <td>@cep.Uf</td>
+                    <td>
+                        <a href="/ceps/edit/@cep.Id">Editar</a> |
+                        <a href="/ceps/delete/@cep.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Models.Ceps>? ceps;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ceps = await http.GetFromJsonAsync<List<Models.Ceps>>("api/v1/Cep");//https://localhost:7184/api/v1/Cep
+
+            if (ceps == null)
+            {
+                errorMessage = "Resposta vazia do servidor (ceps == null). Verifique o endpoint e o JSON retornado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            // Mostra mensagem amigável na UI e registra no console do cliente
+            errorMessage = ex.Message;
+            Console.Error.WriteLine(ex);
+        }
+    }
+}
