@@ -1,0 +1,29 @@
+﻿@page "/ceps/create"
+@inject HttpClient http
+@inject NavigationManager nav
+
+<h3>Novo CEP</h3>
+
+<EditForm Model="cep" OnValidSubmit="Salvar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="cep.Cep" placeholder="CEP" />
+    <InputText @bind-Value="cep.Logradouro" placeholder="Logradouro" />
+    <InputText @bind-Value="cep.Numero" placeholder="Número" />
+    <InputText @bind-Value="cep.Complemento" placeholder="Complemento" />
+    <InputText @bind-Value="cep.Bairro" placeholder="Bairro" />
+    <InputText @bind-Value="cep.Cidade" placeholder="Cidade" />
+    <InputText @bind-Value="cep.Uf" placeholder="Estado" />
+    <button type="submit">Salvar</button>
+</EditForm>
+
+@code {
+    private Models.Ceps cep = new Models.Ceps();
+
+    private async Task Salvar()
+    {
+        await http.PostAsJsonAsync("api/v1/Cep", cep);
+        nav.NavigateTo("/ceps");
+    }
+}

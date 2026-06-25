@@ -1,0 +1,27 @@
+﻿@page "/ceps/delete/{id:int}"
+@inject HttpClient http
+@inject NavigationManager nav
+
+<h3>Excluir CEP</h3>
+
+<p>Tem certeza que deseja excluir o CEP @cep?.Cep?</p>
+
+<button @onclick="Excluir">Confirmar</button>
+<button @onclick="@(() => nav.NavigateTo("/ceps"))">Cancelar</button>
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Models.Ceps cep;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cep = await http.GetFromJsonAsync<Models.Ceps>($"api/v1/Cep/{id}");
+    }
+
+    private async Task Excluir()
+    {
+        await http.DeleteAsync($"api/v1/Cep/{id}");
+        nav.NavigateTo("/ceps");
+    }
+}

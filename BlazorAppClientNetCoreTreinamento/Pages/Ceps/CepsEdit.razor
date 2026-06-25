@@ -1,0 +1,35 @@
+﻿@page "/ceps/edit/{id:int}"
+@inject HttpClient http
+@inject NavigationManager nav
+
+<h3>Editar CEP</h3>
+
+<EditForm Model="cep" OnValidSubmit="Salvar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="cep.Cep" />
+    <InputText @bind-Value="cep.Logradouro" />
+    <InputText @bind-Value="cep.Numero" />
+    <InputText @bind-Value="cep.Complemento" />
+    <InputText @bind-Value="cep.Bairro" />
+    <InputText @bind-Value="cep.Cidade" />
+    <InputText @bind-Value="cep.Uf" />
+    <button type="submit">Salvar</button>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Models.Ceps cep = new Models.Ceps();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cep = await http.GetFromJsonAsync<Models.Ceps>($"api/v1/Cep/{id}");
+    }
+
+    private async Task Salvar()
+    {
+        await http.PutAsJsonAsync($"api/v1/Cep/{id}", cep);
+        nav.NavigateTo("/ceps");
+    }
+}
